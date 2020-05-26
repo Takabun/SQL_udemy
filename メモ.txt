@@ -1,0 +1,118 @@
+SQL udemy
+
+https://programmingnavi.com/support-sql/
+
+where: 数字で絞り込み
+like : 文字列
+  %: 0文字以上の文字列  _ : 任意の一文字
+limit: 量制限  limit 10, 10: 11番目から10こ
+
+48
+豆知識：１つのクエリで、limitは1000件くらいで様子を見るといい。
+レコード総数、10万件くらいからパフォーマンスの影響が出てくる
+
+61
+select avg(price) from products;: avg()やsum()はselectの所で使う！
+
+62
+null: できれば使わない方がいい。使う場合は、0とnullの違いや、nullと空文字の違いを意識する
+
+64
+distinct: 重複を排除した数をカウントする(月間ユニークユーザーの抽出に使える)
+select  count(distinct user_id) from  access_logs where request_month = '2017-01';
+
+65
+グループ化
+select  prefecture_id, count(*) from users group by   prefecture_id;
+
+67
+having:　whereと同じようなものだが、データを集約した結果に対して条件式を適用
+
+68
+￼
+
+
+72　
+ordrer byで、複数条件
+select * from products order by price desc, id;
+
+
+80
+文字列の連結
+select concat(last_name, ' ', first_name, 'さん') from users;
+
+
+84
+/* extract ・・・ 日付や時刻の特定の部分（年や月）までを取り出す。
+/* ordersテーブルから注文日時(order_timeカラム)が、2017年01月のレコードを取得する
+select * from orders where extract(year_month from order_time) = 201701;
+
+
+89　内部結合
+select
+    u.id,
+    u.last_name,
+    u.first_name,
+    p.name /*ここはuではなくp!
+from
+    users u 
+inner join
+-- join
+    prefectures p /*結合先のテーブル名
+on u.prefecture_id = p.id;
+
+94　外部結合
+select
+    u.last_name last_name,
+    u.id user_id,
+    o.user_id order_user_id,
+    o.id order_id
+from
+    users u
+-- inner join
+-- left outer join
+left join
+    orders o
+on u.id = o.user_id
+order by u.id;
+
+
+98 
+Union: ベースとなるselectの結果に、unionの後に記載したselectの内容を足し算
+Union all : 重複行を削除しない
+Where区は一致させなくともいい
+
+
+99
+ビュー：　データではなくselect区を保存する。
+メリット：データを保存しないのでメモリを節約 / 使い回しができる
+最初に普通にselect文を作成し、その後にcreate view prefecture_user_counts(name, count) as~~とする。
+Name, countがそれぞれビューの1, 2行目の名前になる
+
+
+104　サブクエリ：ある問い合わせの結果に基づいて、異なる問い合わせを行う仕組み
+
+105 サブクエリ
+select   id, last_name, email  from users where id not in(
+select  user_id from  orders  where  order_time 
+>= '2017-12-01 00:00:00'   and order_time < '2018-01-01 00:00:00');
+
+ 110 case式
+select 
+    u.id as user_id,
+    count(*) as num,
+    case
+        when count(*) >= 5 then 'A'
+        when count(*) >= 2 then 'B'
+        else 'C'
+    end as user_rank
+from
+    users as u
+inner join
+    orders as o
+on u.id = o.user_id
+group by u.id
+order by user_rank ;
+
+
+あ
